@@ -29,6 +29,7 @@ tutorial/
 *.test
 *.pkl
 *.txt
+*.pt
 data/
 output/
 
