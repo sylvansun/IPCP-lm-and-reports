@@ -33,4 +33,6 @@ tutorial/
 data/
 output/
 
+#tensorboard
+runs/ 
 
