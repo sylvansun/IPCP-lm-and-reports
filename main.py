@@ -6,6 +6,7 @@ import os
 import torch
 import torch.nn as nn
 import torch.onnx
+from torch.utils.tensorboard import SummaryWriter
 
 import data
 import model
@@ -210,6 +211,7 @@ def export_onnx(path, batch_size, seq_len):
 # Loop over epochs.
 lr = args.lr
 best_val_loss = None
+writer = SummaryWriter('./runs/{}'.format(args.save))
 
 # At any point you can hit Ctrl + C to break out of training early.
 try:
