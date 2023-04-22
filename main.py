@@ -155,6 +155,7 @@ def evaluate(data_source):
                 output, hidden = model(data, hidden)
                 hidden = repackage_hidden(hidden)
             total_loss += len(data) * criterion(output, targets).item()
+            writer.add_scalar('Loss/val', total_loss / (len(data_source) - 1), epoch * len(data_source) + i)
     return total_loss / (len(data_source) - 1)
 
 
@@ -186,7 +187,7 @@ def train():
             p.data.add_(p.grad, alpha=-lr)
 
         total_loss += loss.item()
-
+        
         if batch % args.log_interval == 0 and batch > 0:
             cur_loss = total_loss / args.log_interval
             elapsed = time.time() - start_time
@@ -194,6 +195,7 @@ def train():
                     'loss {:5.2f} | ppl {:8.2f}'.format(
                 epoch, batch, len(train_data) // args.bptt, lr,
                 elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
+            writer.add_scalar('training loss', cur_loss, epoch * len(train_data) // args.bptt + batch)
             total_loss = 0
             start_time = time.time()
         if args.dry_run:
