@@ -154,8 +154,9 @@ def evaluate(data_source):
             else:
                 output, hidden = model(data, hidden)
                 hidden = repackage_hidden(hidden)
-            total_loss += len(data) * criterion(output, targets).item()
-            writer.add_scalar('Loss/val', total_loss / (len(data_source) - 1), epoch * len(data_source) + i)
+            unit_loss = criterion(output, targets).item()
+            writer.add_scalar('validation loss', unit_loss, epoch*len(data_source) + i)
+            total_loss += len(data) * unit_loss
     return total_loss / (len(data_source) - 1)
 
 
