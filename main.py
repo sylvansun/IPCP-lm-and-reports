@@ -38,8 +38,8 @@ parser.add_argument('--tied', action='store_true',
                     help='tie the word embedding and softmax weights')
 parser.add_argument('--seed', type=int, default=2023,
                     help='random seed')
-parser.add_argument('--cuda', action='store_true',
-                    help='use CUDA')
+parser.add_argument('--cpu', action='store_true',
+                    help='NOT use CUDA')
 parser.add_argument('--log-interval', type=int, default=500, metavar='N',
                     help='report interval')
 parser.add_argument('--save', type=str, default='model.pt',
@@ -58,7 +58,7 @@ if torch.cuda.is_available():
     if not args.cuda:
         print("WARNING: You have a CUDA device, so you should probably run with --cuda.")
 
-device = torch.device("cuda" if args.cuda else "cpu")
+device = torch.device("cuda" if not args.cpu else "cpu")
 print("device: ", device)
 ###############################################################################
 # Load data
