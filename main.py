@@ -63,7 +63,7 @@ print("device: ", device)
 log_folder_path = './checkpoint/{}'.format(args.model)
 if not os.path.exists(log_folder_path):
     os.makedirs(log_folder_path)
-log_file_path = (log_folder_path + '/emsize{}_nhid{}_nlayers{}_lr{}_bptt{}_dropout{}.txt'.format(args.emsize, args.nhid, args.nlayers, args.lr, args.bptt, args.dropout))
+log_file_path = (log_folder_path + '/emsize{}_nhid{}_nlayers{}_lr{}_bptt{}_dropout{}_seed{}.txt'.format(args.emsize, args.nhid, args.nlayers, args.lr, args.bptt, args.dropout, args.seed))
 logfile = open(log_file_path, 'w')
 logfile.write('device: {}\n'.format(device))
 logfile.write('model: {}\n'.format(args.model))
@@ -243,7 +243,7 @@ def export_onnx(path, batch_size, seq_len):
 # Loop over epochs.
 lr = args.lr
 best_val_loss = None
-writer = SummaryWriter('./runs/{}'.format(args.save))
+writer = SummaryWriter('./tensorboard/{}'.format(log_file_path))
 
 # At any point you can hit Ctrl + C to break out of training early.
 try:
