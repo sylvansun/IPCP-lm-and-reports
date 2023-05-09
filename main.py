@@ -55,11 +55,34 @@ args = parser.parse_args()
 # Set the random seed manually for reproducibility.
 torch.manual_seed(args.seed)
 if torch.cuda.is_available():
-    if not args.cuda:
+    if args.cpu:
         print("WARNING: You have a CUDA device, so you should probably run with --cuda.")
-
 device = torch.device("cuda" if not args.cpu else "cpu")
 print("device: ", device)
+
+log_folder_path = './checkpoint/{}'.format(args.model)
+if not os.path.exists(log_folder_path):
+    os.makedirs(log_folder_path)
+log_file_path = (log_folder_path + '/emsize{}_nhid{}_nlayers{}_lr{}_bptt{}_dropout{}.txt'.format(args.emsize, args.nhid, args.nlayers, args.lr, args.bptt, args.dropout))
+logfile = open(log_file_path, 'w')
+logfile.write('device: {}\n'.format(device))
+logfile.write('model: {}\n'.format(args.model))
+logfile.write('emsize: {}\n'.format(args.emsize))
+logfile.write('nhid: {}\n'.format(args.nhid))
+logfile.write('nlayers: {}\n'.format(args.nlayers))
+logfile.write('lr: {}\n'.format(args.lr))
+logfile.write('bptt: {}\n'.format(args.bptt))
+logfile.write('dropout: {}\n'.format(args.dropout))
+logfile.write('nhead: {}\n'.format(args.nhead))
+logfile.write('batch_size: {}\n'.format(args.batch_size))
+logfile.write('clip: {}\n'.format(args.clip))
+logfile.write('epochs: {}\n'.format(args.epochs))
+logfile.write('tied: {}\n'.format(args.tied))
+logfile.write('seed: {}\n'.format(args.seed))
+logfile.write('log_interval: {}\n'.format(args.log_interval))
+logfile.write('save: {}\n'.format(args.save))
+logfile.write('onnx_export: {}\n'.format(args.onnx_export))
+logfile.write('dry_run: {}\n'.format(args.dry_run))
 ###############################################################################
 # Load data
 ###############################################################################
@@ -107,6 +130,8 @@ criterion = nn.NLLLoss()
 print ("Vocabulary Size: ", ntokens)
 num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print ("Total number of model parameters: {:.2f}M".format(num_params*1.0/1e6))
+logfile.write("Vocabulary Size: {}\n".format(ntokens))
+logfile.write("Total number of model parameters: {:.2f}M\n".format(num_params*1.0/1e6))
 
 ###############################################################################
 # Training code
@@ -196,6 +221,10 @@ def train():
                     'loss {:5.2f} | ppl {:8.2f}'.format(
                 epoch, batch, len(train_data) // args.bptt, lr,
                 elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
+            logfile.write('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
+                    'loss {:5.2f} | ppl {:8.2f}\n'.format(
+                epoch, batch, len(train_data) // args.bptt, lr,
+                elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
             writer.add_scalar('training loss', cur_loss, epoch * len(train_data) // args.bptt + batch)
             total_loss = 0
             start_time = time.time()
@@ -227,6 +256,11 @@ try:
                 'valid ppl {:8.2f}'.format(epoch, (time.time() - epoch_start_time),
                                            val_loss, math.exp(val_loss)))
         print('-' * 89)
+        logfile.write('-' * 89 + '\n')
+        logfile.write('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | '
+                'valid ppl {:8.2f}\n'.format(epoch, (time.time() - epoch_start_time),
+                                             val_loss, math.exp(val_loss)))
+        logfile.write('-' * 89 + '\n')
         # Save the model if the validation loss is the best we've seen so far.
         if not best_val_loss or val_loss < best_val_loss:
             with open(args.save, 'wb') as f:
@@ -238,6 +272,8 @@ try:
 except KeyboardInterrupt:
     print('-' * 89)
     print('Exiting from training early')
+    logfile.write('-' * 89 + '\n')
+    logfile.write('Exiting from training early\n')
 
 # Load the best saved model.
 with open(args.save, 'rb') as f:
@@ -254,7 +290,11 @@ print('=' * 89)
 print('| End of training | test loss {:5.2f} | test ppl {:8.2f}'.format(
     test_loss, math.exp(test_loss)))
 print('=' * 89)
-
+logfile.write('=' * 89 + '\n')
+logfile.write('| End of training | test loss {:5.2f} | test ppl {:8.2f}\n'.format(
+    test_loss, math.exp(test_loss)))
+logfile.write('=' * 89 + '\n')
+logfile.close()
 if len(args.onnx_export) > 0:
     # Export the model in ONNX format.
     export_onnx(args.onnx_export, batch_size=1, seq_len=args.bptt)
