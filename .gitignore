@@ -2,18 +2,16 @@
 .DS_Store
 
 #latex
-*.fdb_latexmk
-*.log
-*.out
-*.fls
-*.aux
-*.synctex.gz
-*.tex
-*.sty
 *.bib
 *.bst
-*.bbl
-*.blg
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.out
+*.xdv
+
 
 #python cache files 
 __pycache__/
