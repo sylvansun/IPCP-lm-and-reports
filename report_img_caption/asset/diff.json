@@ -1,0 +1,42 @@
+[
+    {
+        "use_ss": false,
+        "img_id": "352382023_7605223d1c.jpg",
+        "prediction": [
+            "dog is jumping into the water ."
+        ]
+    },
+    {
+        "use_ss": true,
+        "img_id": "352382023_7605223d1c.jpg",
+        "prediction": [
+            "brown dog is jumping into the water ."
+        ]
+    },
+    {
+        "img_id": "352382023_7605223d1c.jpg",
+        "ground_truth": [
+            "A dog carrying a stick while walking in water ."
+        ]
+    },
+    {
+        "use_ss": false,
+        "img_id": "486917990_72bd4069af.jpg",
+        "prediction": [
+            "man is climbing up a rock face ."
+        ]
+    },
+    {
+        "use_ss": true,
+        "img_id": "486917990_72bd4069af.jpg",
+        "prediction": [
+            "man in a white shirt and a white shirt is climbing a rock face ."
+        ]
+    },
+    {
+        "img_id": "486917990_72bd4069af.jpg",
+        "ground_truth" :[
+            "A person wearing a white hat climbs a rock ."
+        ]
+    }
+]
