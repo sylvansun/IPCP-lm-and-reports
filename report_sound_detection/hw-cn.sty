@@ -1,0 +1,134 @@
+% Acquired from Overleaf templates.
+
+\ProvidesPackage{hw-cn}[2021/10/30  v0.1.5]
+%shzaiz
+% 眉首眉脚
+\RequirePackage{fancyhdr}
+% 调色板
+\RequirePackage{xcolor-material}
+\RequirePackage{overpic}
+% 代码提示
+\RequirePackage{listings}
+% 版边边距
+\RequirePackage[left=2cm, right=2cm, bottom=2cm]{geometry}
+% 更加现代定理、引用提示
+\RequirePackage{tcolorbox}
+% 书签
+\RequirePackage[open, openlevel=2, atend]{bookmark}
+% 链接
+\RequirePackage{hyperref}
+
+%%% 自定义 %%%
+% 主色调
+\colorlet{PrimaryColor}{black}
+
+%%% CTEX格式设置 %%%
+\ctexset{
+  contentsname={目录},
+  section/format=\Large\bfseries\color{PrimaryColor},
+  subsection/number={\textcolor{PrimaryColor}{\thesubsection}},
+}
+
+%%% 链接设置 %%%
+\hypersetup{
+    colorlinks=true,    
+    urlcolor=MaterialBlue,
+    citecolor=cyan,
+}
+%改变颜色
+
+
+%%% 代码高亮设置 %%%
+\tcbuselibrary{listings}
+
+\lstset{
+  numbers=left,
+  frame=single,
+  frameround=tttt,
+  framesep=1pt,
+  framextopmargin=6pt,
+  framexbottommargin=6pt,
+  tabsize=4,
+  breaklines=true,
+  upquote=true,
+  captionpos=b,
+  basicstyle=\footnotesize,
+  backgroundcolor=\color{MaterialYellow50},
+  rulecolor=\color{MaterialBlue},
+  identifierstyle=\color{MaterialBlue800},
+    keywordstyle=[1]\bfseries\color{MaterialBlue700},
+  % 新类、新类型、新接口定义
+  keywordstyle=[2]\bfseries\color{MaterialTeal800},
+  % 原始类型
+  keywordstyle=[3]\bfseries\color{Materialblue400},
+  % 模块
+  keywordstyle=[4]\bfseries\color{MaterialBlue900},
+  % 其他
+  keywordstyle=[5]\color{MaterialBlue500},
+  numberstyle=\bfseries\color{MaterialGrey800},
+}
+
+
+% rust语法定义
+\lstdefinelanguage{rust}{
+  morekeywords=[1]{const, let, mut, fn, unsafe, while, loop, if, else, \?, return, await, async},
+  morekeywords=[1]{as, dyn, Trait, impl, static, for},
+  morekeywords=[1]{break, continue, label},
+  morekeywords=[2]{trait, type, struct, newtype, enum, Self, self},
+  morekeywords=[3]{Vec, String, str, Box, Cell, Arc, Send, Sync, Error, Option, Result},
+  morekeywords=[4]{mod, use, crate, pub},
+  morekeywords=[5]{println!, dbg!, format!, panic!},
+  otherkeywords={::},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[bd]",
+}
+
+% arm语法定义
+\lstdefinelanguage{arm}{
+  morekeywords=[1]{mrs, msr, mov},
+  morekeywords=[2]{cbz, b},
+  morekeywords=[3]{and, adr, orr},
+  morekeywords=[4]{primary, mpidr_el1, CurrentEL, Ltarget, elr_el3, spsr_el3},
+  morekeywords=[5]{SPSR_ELX_DAIF, SPSR_ELX_EL1H}
+  sensitive=true,
+  morecomment=[s]{/*}{*/},
+}
+
+\lstdefinelanguage{latex}{
+ columns=fixed,       
+ numbers=left,                                        % 在左侧显示行号
+ numberstyle=\tiny\color{gray},                       % 设定行号格式
+ frame=none,                                          % 不显示背景边框
+ backgroundcolor=\color[RGB]{245,245,244},            % 设定背景颜色
+ keywordstyle=\color[RGB]{40,40,255},                 % 设定关键字颜色
+ numberstyle=\footnotesize\color{darkgray},           
+ commentstyle=\it\color[RGB]{0,96,96},                % 设置代码注释的格式
+ stringstyle=\rmfamily\slshape\color[RGB]{128,0,0},   % 设置字符串格式
+ showstringspaces=false,                              % 不显示字符串中的空格
+ language=c++,                                        % 设置语言
+}
+
+\lstalias{rs}{rust}
+
+%%% 页眉页脚设置 %%%
+\pagestyle{fancy}
+\renewcommand{\headrule}{\color{PrimaryColor}\hrule width\textwidth}
+
+
+%%% tcolorbox %%%
+\tcbuselibrary{theorems}
+\tcbuselibrary{skins}
+\tcbsetforeverylayer{enhanced}
+
+% 内联代码，单一颜色
+\providecommand\代码[1]{%
+  \ttfamily\textcolor{MaterialGrey}{#1}
+}
+
+
+
+%小杂碎，放在最末尾
+\setcounter{section}{0}
+\allowdisplaybreaks[4]
