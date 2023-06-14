@@ -43,6 +43,90 @@
 \begin{document}
 
 \section{提交文件简要说明}
+本次实验使用超算hpc进行，代码改动集中在\texttt{model.py}，并未对原有其他代码框架进行大幅更改。数据预处理根据\texttt{data}目录下的\texttt{prepare\_data.sh}文件进行，
+提取的数据保存在该目录下，并未从\texttt{stu168}拷贝原始数据集（可以软链接，但并不需要）。按照原有代码框架脚本，实验结果默认保存在\texttt{experiments/Crnn}目录下，
+超算运行日志保存在\texttt{slurm\_logs}文件夹下。
+\section{任务理解}
 
+\subsection{声音事件检测模型理解}
+
+\subsection{弱监督情况下进行时间轴预测的难点}
+
+\subsection{基线模型设计的原理}
+
+\subsection{Crnn模型实现}
+
+\newpage
+\section{实验}
+
+\subsection{数据预处理}
+将脚本cp到个人hpc目录后运行\texttt{data}文件夹下的\texttt{prepare\_data.sh}脚本，将根据\texttt{stu168}用户下的原始数据提取用于本次训练的后续相关数据。
+需要使用单线程数据处理脚本，并对librosa版本降级，从而成功提取数据。
+\subsection{实验结果和分析}
+\texttt{baseline.yaml}中未提供大量的参数供调整，本任务的重点在于Crnn的模型搭建和结构调整，故本部分重点在于总结不同Crnn结构下的实验结果，
+并展示模型结构改进对评测指标的影响。本次任务最终提交的\texttt{model.py}即保留了最优情况下的模型参数配置，其脚本则为\texttt{run.sh}及相关的配置文件。
+
+本次实验最开始我的直观想法是直接将Crnn所需要的神经网络模块，包括但不限于fully connect, convolution, lstm, batchnorm等融合在一起，
+不对参数进行细致的配置，直接使用relu, sigmoid等激活函数，在成功搭建后的初步实验结如下：
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|cll|}
+    \hline
+    Metrics        & \multicolumn{1}{c|}{f\_measure} & \multicolumn{1}{l|}{precision}  & recall     \\ \hline
+    event\_based   & \multicolumn{1}{c|}{0.00743036} & \multicolumn{1}{l|}{0.00666628} & 0.00990206 \\ \hline
+    segment\_based & \multicolumn{1}{c|}{0.196863}   & \multicolumn{1}{l|}{0.310598}   & 0.161337   \\ \hline
+    tagging\_based & \multicolumn{1}{c|}{0.449451}   & \multicolumn{1}{l|}{0.568862}   & 0.387041   \\ \hline
+    mAP            & \multicolumn{3}{c|}{0.5058306091886279}                                        \\ \hline
+    \end{tabular}
+    \caption{简单Crnn结构：双层卷积}
+    \label{exp1}
+\end{table}
+
+初步实验成功之后，进行模型结构调整，增加卷积层和BatchNorm层的个数，使用两种不同的池化方式，结果如下：
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|cll|}
+    \hline
+    Metrics        & \multicolumn{1}{c|}{f\_measure} & \multicolumn{1}{l|}{precision}  & recall     \\ \hline
+    event\_based   & \multicolumn{1}{c|}{0.00831543} & \multicolumn{1}{l|}{0.0116714}  & 0.00656456 \\ \hline
+    segment\_based & \multicolumn{1}{c|}{0.226929}   & \multicolumn{1}{l|}{0.42916}    & 0.156146   \\ \hline
+    tagging\_based & \multicolumn{1}{c|}{0.553278}   & \multicolumn{1}{l|}{0.630679}   & 0.511583   \\ \hline
+    mAP            & \multicolumn{3}{c|}{mAP: 0.5788640257440317}                                        \\ \hline
+    \end{tabular}
+    \caption{改进Crnn结构：三层卷积、batchnorm、两种pooling}
+    \label{exp2}
+\end{table}
+
+\newpage
+按照slides给出模型结构进行最终改进（此即提交文件中的模型结构），结果如下：
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|cll|}
+    \hline
+    Metrics        & \multicolumn{1}{c|}{f\_measure} & \multicolumn{1}{l|}{precision}  & recall     \\ \hline
+    event\_based   & \multicolumn{1}{c|}{0.0108622}  & \multicolumn{1}{l|}{0.0139943}  & 0.00960896 \\ \hline
+    segment\_based & \multicolumn{1}{c|}{0.231898}   & \multicolumn{1}{l|}{0.418706}   & 0.163764   \\ \hline
+    tagging\_based & \multicolumn{1}{c|}{0.582452}   & \multicolumn{1}{l|}{0.628041}   & 0.565621   \\ \hline
+    mAP            & \multicolumn{3}{c|}{mAP: 0.6098265732798768}                                        \\ \hline
+    \end{tabular}
+    \caption{最终Crnn结构：模型结构保留在model.py中}
+    \label{exp3}
+\end{table}
+
+模型结构确定，继续进行参数调整，包括但不限于各个卷积层的in\_channels, out\_channels, LSTM网络的隐层维度、层数（即提交文件中的默认参数），
+主要是增大卷积层channel的个数和LSTM网络隐层向量的维度，结果如下：
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|cll|}
+    \hline
+    Metrics        & \multicolumn{1}{c|}{f\_measure} & \multicolumn{1}{l|}{precision}  & recall     \\ \hline
+    event\_based   & \multicolumn{1}{c|}{0.00938473} & \multicolumn{1}{l|}{0.0115726}  & 0.00811011 \\ \hline
+    segment\_based & \multicolumn{1}{c|}{0.240401}   & \multicolumn{1}{l|}{0.423576}   & 0.172586   \\ \hline
+    tagging\_based & \multicolumn{1}{c|}{0.633284}   & \multicolumn{1}{l|}{0.637923}   & 0.634307   \\ \hline
+    mAP            & \multicolumn{3}{c|}{mAP: 0.6330678570776226}                                        \\ \hline
+    \end{tabular}
+    \caption{最终Crnn参数：模型参数是model.py中的默认参数}
+    \label{exp4}
+\end{table}
 
 \end{document}
