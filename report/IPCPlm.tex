@@ -158,9 +158,12 @@ Transformer中没有了序列这个概念，通过将输入的语句当作一个
 \end{table}
 
 可以看到，在本次实验的数据集和配置环境下，LSTM网络取得了最好的结果。
-虽然Transformer在大规模数据集和大多数自然语言处理的任务场景下优秀的性能已经得到了验证，
-但是当序列长度没有超过RNN的处理能力的时候，\texttt{positional\_encoding}对时序的建模能力还是不如RNN的。
-我们本次实验所使用\texttt{gigaspeech}数据集规模并不大，可能无法很好地发挥Transformer模型的优势。
+值得注意的是，Transformer模型的Test Loss和Perplexity都比其他模型要高，经过课上老师的讲解和与同学的讨论，
+本次实验原始代码中的Transformer模型结构存在着一定的问题，因此在实验中并没有得到很好的结果。
+Transformer在大规模数据集和大多数自然语言处理的任务场景下优秀的性能已经得到了验证，
+尽管在小数据集下\texttt{positional\_encoding}对时序的建模能力可能不如RNN，
+但我们本次实验所使用\texttt{gigaspeech}数据集规模已经足以发挥Transformer模型的优势。
+所以我认为Transformer模型在本次实验中表现不佳的原因是模型结构或者代码内部逻辑的问题，而不是Transformer模型本身的问题。
 
 \subsection{不同超参数对模型性能的影响}
 在本次实验中，我取得的最优性能是在使用LSTM模型下得到的，即表格\ref{tab2}中在测试集上的test loss 4.90和perplexity 133.81。
